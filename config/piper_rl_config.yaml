@@ -1,0 +1,58 @@
+# Piper RL 部署配置文件
+
+piper_rl_controller:
+  ros__parameters:
+    # 控制频率设置
+    control_frequency: 200.0      # 控制循环频率 (Hz)
+    inference_frequency: 10.0   # 模型推理频率 (Hz)
+
+        # 模型配置
+    model_path: "/home/gift/RL_AItennis/src/piper_rl_deploy/models/no_noise.pt"               # 模型文件路径 (请设置为您的.pt或.onnx文件路径)
+    model_type: "pytorch"        # 模型类型: "pytorch" 或 "onnx"
+    use_history: false           # 关闭历史，因为训练代码没有使用历史
+    obs_dim: 7                  # 观测维度: 4(动作) + 3(手帕位置) 
+    action_dim: 4                # 动作维度: 4个关节
+    history_length: 1            # 不使用历史
+
+    # 话题名称配置
+    robot_base_pose_topic: "/vicon/root0822/root0822"      # 机械臂底座位置话题 (geometry_msgs/PoseStamped)
+    tennis_pose_topic: "/vicon/cloth082201/cloth082201"  # 手绢位置话题 (geometry_msgs/PoseStamped)
+    
+    # 机械偏置配置
+    tennis_z_offset: 0.0  # 手绢z轴机械偏置 (米)
+    
+    # 示例：如果使用Vicon系统，可以设置为实际话题名：
+    # robot_base_pose_topic: "/vicon/robot_base/robot_base"
+    # tennis_pose_topic: "/vicon/basketball0817/basketball0817"
+
+    # 关节配置 - 匹配实际piper机器人的关节名称
+    joint_names: 
+      - "axis_x"
+      - "axis_y"
+      - "axis_z"
+      - "axis_racket"
+
+    # PD控制器增益 - 根据训练代码中的配置调整
+    default_kp: [80.0, 80.0, 80.0, 80.0]
+    default_kd: [4.0, 4.0, 4.0, 4.0]
+
+    # 动作缩放和偏移 - 训练代码中通过关节限制处理，这里设为默认值
+    action_scale: [1.0, 1.0, 1.0, 1.0]
+    joint_pos_offset: [0.0, 0.0, 0.0, 0.0]
+
+    # 安全限制
+    max_joint_velocity: 10.0     # 最大关节速度 (rad/s)
+    max_joint_effort: 100.0      # 最大关节力矩 (Nm)
+    position_limits:             # 关节位置限制 (rad) - 6个关节
+      min: [-3.14, -1.57, -3.14, -1.57]
+      max: [3.14, 1.57, 3.14, 1.57]
+
+    # 观测配置
+    observation:
+      normalize: true            # 是否归一化观测
+      clip_range: 10.0          # 观测裁剪范围
+
+    # 命令配置  
+    command:
+      max_linear_vel: 1.0       # 最大线速度 (m/s)
+      max_angular_vel: 1.0      # 最大角速度 (rad/s)
