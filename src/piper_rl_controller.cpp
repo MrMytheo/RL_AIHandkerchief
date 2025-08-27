@@ -408,9 +408,9 @@ bool PiperRLController::safetyCheck(const std::vector<float>& actions) {
         if (std::isnan(action) || std::isinf(action)) {
             return false;
         }
-        if (std::abs(action) > 2.0) {  // 设置一个合理的上限
-            return false;
-        }
+        // if (std::abs(action) > 2.0) {  // 设置一个合理的上限
+        //     return false;
+        // }
     }
     return true;
 }
